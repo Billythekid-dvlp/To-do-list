@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ma To Do List</title>
+    <style>
+        :root {
+            --primary: #6a8d73;
+            --secondary: #f4fdd9;
+            --accent: #e4ffe1;
+            --text: #2c302e;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--secondary);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        h1 {
+            color: var(--primary);
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+            position: relative;
+            display: inline-block;
+        }
+        
+        h1::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 25%;
+            width: 50%;
+            height: 3px;
+            background-color: var(--primary);
+            border-radius: 3px;
+        }
+        
+        .tagline {
+            font-style: italic;
+            color: #666;
+        }
+        
+        .form-container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        input[type="text"],
+        textarea,
+        select,
+        input[type="date"] {  /* Ajout du style pour input date */
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border 0.3s;
+            height: 42px; /* Hauteur uniforme */
+        }
+        
+        input[type="text"]:focus,
+        textarea:focus,
+        select:focus,
+        input[type="date"]:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #5a7b63;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #ddd;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 600px) {
+            .form-row {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+
+    <script>
+        const todoData = {
+            priorities: [
+                {id: "high", name: "Sortilège urgent"},
+                {id: "medium", name: "Important"},
+                {id: "low", name: "Peut attendre un sort"}
+            ],
+            categories: [
+                {id: "potions", name: "Préparation de potions"},
+                {id: "spells", name: "Apprentissage de sorts"},
+                {id: "creatures", name: "Soins aux créatures"},
+                {id: "divination", name: "Divination"},
+                {id: "herbology", name: "Botanique magique"}
+            ],
+            difficulties: [
+                {id: "easy", name: "Sort simple"},
+                {id: "medium", name: "Sort intermédiaire"},
+                {id: "hard", name: "Sort complexe"},
+                {id: "epic", name: "Sort légendaire"}
+            ]
+        };
+    </script>
+</head>
+<body>
+    <header>
+        <h1>Tâches de Sorcier</h1>
+        <p class="tagline">Organisez-vous en toute sérénité</p>
+    </header>
+    
+    <main>
+        <form class="form-container">
+            <div class="form-group">
+                <label for="task-title">Titre de la tâche</label>
+                <input type="text" id="task-title" placeholder="Quel sort devez-vous préparer ?" required>
+            </div>
+
+            <div class="form-group">
+                <label for="task-description">Description</label>
+                <textarea id="task-description" placeholder="Ingredients, incantation, effets..."></textarea>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="task-category">Catégorie</label>
+                    <select id="task-category" required>
+                        <option value="">-- Choisissez --</option>
+                    </select>
+                    <script>
+                        todoData.categories.forEach(function(item) {
+                            const option = document.createElement('option');
+                            option.value = item.id;
+                            option.textContent = item.name;
+                            document.getElementById("task-category").appendChild(option);
+                        });
+                    </script>
+                </div>
+                
+                <div class="form-group">
+                    <label for="task-priority">Priorité</label>
+                    <select id="task-priority" required>
+                        <option value="">-- Choisissez --</option>
+                    </select>
+                    <script>
+                        todoData.priorities.forEach(function(item) {
+                            const option = document.createElement('option');
+                            option.value = item.id;
+                            option.textContent = item.name;
+                            document.getElementById("task-priority").appendChild(option);
+                        });
+                    </script>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="task-difficulty">Difficulté</label>
+                    <select id="task-difficulty" required>
+                        <option value="">-- Choisissez --</option>
+                    </select>
+                    <script>
+                        todoData.difficulties.forEach(function(item) {
+                            const option = document.createElement('option');
+                            option.value = item.id;
+                            option.textContent = item.name;
+                            document.getElementById("task-difficulty").appendChild(option);
+                        });
+                    </script>
+                </div>
+                
+                <div class="form-group">
+                    <label for="task-due-date">Date limite</label>
+                    <input type="date" id="task-due-date" class="date-input">
+                </div>
+            </div>
+            
+            <button type="submit">Enregistrer le sort</button>
+        </form>
+    </main>
+
+    <footer>
+        <p>© 2025 Tâches de Sorcier - Projet réalisé par KELLOU Billel - Tous droits réservés</p>
+    </footer>
+</body>
+</html>
