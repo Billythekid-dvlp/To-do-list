@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ma To Do List</title>
+    <title>To Do List - Version Simplifiée</title>
     <style>
         :root {
             --primary: #6a8d73;
@@ -51,7 +51,6 @@
             background-color: var(--primary);
             border-radius: 3px;
         }
-        
         .tagline {
             font-style: italic;
             color: #666;
@@ -63,7 +62,24 @@
             border-radius: 15px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
-        
+        .link-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: var(--primary);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: center;
+            transition: background-color 0.3s, transform 0.2s;
+            margin-top: 15px; 
+            width: 100%; 
+        }
+
+        .link-button:hover {
+            background-color: #5a7b63;
+            transform: scale(1.05);
+        }
         .form-group {
             margin-bottom: 1.5rem;
         }
@@ -78,14 +94,14 @@
         input[type="text"],
         textarea,
         select,
-        input[type="date"] {  /* Ajout du style pour input date */
+        input[type="date"] {
             width: 100%;
             padding: 10px;
             border: 2px solid #ddd;
             border-radius: 8px;
             font-size: 1rem;
             transition: border 0.3s;
-            height: 42px; /* Hauteur uniforme */
+            height: 42px;
         }
         
         input[type="text"]:focus,
@@ -147,29 +163,6 @@
             }
         }
     </style>
-
-    <script>
-        const todoData = {
-            priorities: [
-                {id: "high", name: "Sortilège urgent"},
-                {id: "medium", name: "Important"},
-                {id: "low", name: "Peut attendre un sort"}
-            ],
-            categories: [
-                {id: "potions", name: "Préparation de potions"},
-                {id: "spells", name: "Apprentissage de sorts"},
-                {id: "creatures", name: "Soins aux créatures"},
-                {id: "divination", name: "Divination"},
-                {id: "herbology", name: "Botanique magique"}
-            ],
-            difficulties: [
-                {id: "easy", name: "Sort simple"},
-                {id: "medium", name: "Sort intermédiaire"},
-                {id: "hard", name: "Sort complexe"},
-                {id: "epic", name: "Sort légendaire"}
-            ]
-        };
-    </script>
 </head>
 <body>
     <header>
@@ -178,7 +171,7 @@
     </header>
     
     <main>
-        <form class="form-container">
+        <form class="form-container" id="task-form">
             <div class="form-group">
                 <label for="task-title">Titre de la tâche</label>
                 <input type="text" id="task-title" placeholder="Quel sort devez-vous préparer ?" required>
@@ -186,7 +179,7 @@
 
             <div class="form-group">
                 <label for="task-description">Description</label>
-                <textarea id="task-description" placeholder="Ingredients, incantation, effets..."></textarea>
+                <textarea id="task-description" placeholder="Ingrédients, incantation, effets..." required></textarea>
             </div>
 
             <div class="form-row">
@@ -194,30 +187,22 @@
                     <label for="task-category">Catégorie</label>
                     <select id="task-category" required>
                         <option value="">-- Choisissez --</option>
+                        <option value="potions">Préparation de potions</option>
+                        <option value="spells">Apprentissage de sorts</option>
+                        <option value="creatures">Soins aux créatures</option>
+                        <option value="divination">Divination</option>
+                        <option value="herbology">Botanique magique</option>
                     </select>
-                    <script>
-                        todoData.categories.forEach(function(item) {
-                            const option = document.createElement('option');
-                            option.value = item.id;
-                            option.textContent = item.name;
-                            document.getElementById("task-category").appendChild(option);
-                        });
-                    </script>
                 </div>
                 
                 <div class="form-group">
                     <label for="task-priority">Priorité</label>
                     <select id="task-priority" required>
                         <option value="">-- Choisissez --</option>
+                        <option value="high">Sortilège urgent</option>
+                        <option value="medium">Important</option>
+                        <option value="low">Peut attendre un sort</option>
                     </select>
-                    <script>
-                        todoData.priorities.forEach(function(item) {
-                            const option = document.createElement('option');
-                            option.value = item.id;
-                            option.textContent = item.name;
-                            document.getElementById("task-priority").appendChild(option);
-                        });
-                    </script>
                 </div>
             </div>
 
@@ -226,29 +211,120 @@
                     <label for="task-difficulty">Difficulté</label>
                     <select id="task-difficulty" required>
                         <option value="">-- Choisissez --</option>
+                        <option value="easy">Sort simple</option>
+                        <option value="medium">Sort intermédiaire</option>
+                        <option value="hard">Sort complexe</option>
+                        <option value="epic">Sort légendaire</option>
                     </select>
-                    <script>
-                        todoData.difficulties.forEach(function(item) {
-                            const option = document.createElement('option');
-                            option.value = item.id;
-                            option.textContent = item.name;
-                            document.getElementById("task-difficulty").appendChild(option);
-                        });
-                    </script>
                 </div>
                 
                 <div class="form-group">
                     <label for="task-due-date">Date limite</label>
-                    <input type="date" id="task-due-date" class="date-input">
+                    <input type="date" id="task-due-date" required>
                 </div>
             </div>
-            
-            <button type="submit">Enregistrer le sort</button>
+
+            <div class="form-group">
+                <label for="task-status">Statut</label>
+                <select id="task-status" required>
+                    <option value="">-- Choisissez --</option>
+                    <option value="en_attente">En attente</option>
+                    <option value="en_cours">En cours</option>
+                    <option value="terminee">Terminée</option>
+                </select>
+            </div>
+            <button type="button" onclick="save()">Enregistrer le sort</button>
+            <a href="recapitilatif.html" class="link-button">Voir le résumé des tâches &rarr;</a>
         </form>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                let taskToEdit = localStorage.getItem("taskToEdit");
+                if (taskToEdit) {
+                    taskToEdit = JSON.parse(taskToEdit);
+
+                    document.getElementById("task-title").value = taskToEdit.titre || "";
+                    document.getElementById("task-description").value = taskToEdit.description || "";
+                    document.getElementById("task-category").value = taskToEdit.categorie || "";
+                    document.getElementById("task-priority").value = taskToEdit.priorite || "";
+                    document.getElementById("task-difficulty").value = taskToEdit.difficulte || "";
+                    document.getElementById("task-due-date").value = taskToEdit.dateLimite || "";
+                    document.getElementById("task-status").value = taskToEdit.statut || "";
+
+                    const saveButton = document.querySelector("button[onclick='save()']");
+                    saveButton.textContent = "Modifier la tâche";
+
+                    saveButton.setAttribute("data-editing", taskToEdit.id);
+                }
+            });
+
+            function isDateInPast(date) {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0); 
+                const taskDate = new Date(date);
+                taskDate.setHours(0, 0, 0, 0); 
+                return taskDate < today; 
+            }
+
+            function save() {
+                const form = document.getElementById('task-form');
+                if (!form.checkValidity()) {
+                    form.reportValidity(); 
+                    return; 
+                }
+
+                let titre = document.getElementById('task-title').value;
+                let description = document.getElementById('task-description').value;
+                let categorie = document.getElementById('task-category').value;
+                let priorite = document.getElementById('task-priority').value;
+                let difficulte = document.getElementById('task-difficulty').value;
+                let dateLimite = document.getElementById('task-due-date').value;
+                let statut = document.getElementById('task-status').value;
+
+                const dueDate = new Date(dateLimite);
+                if (isDateInPast(dateLimite) && statut !== "terminee") {
+                    statut = "en_retard";
+                }
+
+                let tasks = JSON.parse(localStorage.getItem("tasks") || "[]");
+
+                const saveButton = document.querySelector("button[onclick='save()']");
+                const editingId = saveButton.getAttribute("data-editing");
+
+                if (editingId) {
+                    let taskToEdit = tasks.find(t => t.id === Number(editingId));
+                    if (taskToEdit) {
+                        taskToEdit.titre = titre;
+                        taskToEdit.description = description;
+                        taskToEdit.categorie = categorie;
+                        taskToEdit.priorite = priorite;
+                        taskToEdit.difficulte = difficulte;
+                        taskToEdit.dateLimite = dateLimite;
+                        taskToEdit.statut = statut;
+                    }
+                } else {
+                    let newTask = {
+                        id: tasks.length + 1, 
+                        titre: titre,
+                        description: description,
+                        categorie: categorie,
+                        priorite: priorite,
+                        difficulte: difficulte,
+                        dateLimite: dateLimite,
+                        statut: statut
+                    };
+                    tasks.push(newTask);
+                }
+
+                localStorage.setItem("tasks", JSON.stringify(tasks));
+
+                form.reset();
+                window.location.href = "recapitilatif.html";
+            }
+        </script>
     </main>
 
     <footer>
-        <p>© 2025 Tâches de Sorcier - Projet réalisé par KELLOU Billel - Tous droits réservés</p>
+        <p>© 2025 Tâches de sorcier</p>
     </footer>
 </body>
 </html>

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Résumé des tâches</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background-color: #f4fdd9;
+            color: #2c302e;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+        h1 {
+            color: #6a8d73;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        h2 {
+            color: #6a8d73;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+        .table-container {
+            width: 100%;
+            margin: 0 auto;
+            margin-bottom: 2rem;
+        }
+        table {
+            width: 100%;
+            min-width: 1000px;
+            border-collapse: collapse;
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.07);
+        }
+        th, td {
+            padding: 20px 15px;
+            border-bottom: 1px solid #e4ffe1;
+            text-align: center;
+            vertical-align: middle;
+        }
+        th {
+            background: #e4ffe1;
+            color: #6a8d73;
+            font-size: 1.2rem;
+        }
+        td {
+            font-size: 1rem;
+            max-width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .status-btns-cell {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        .status-btn-row {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        .status-btn {
+            margin: 0;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            background: #c0392b;
+            color: #fff;
+            font-size: 0.95em;
+            transition: background 0.2s;
+        }
+        .status-btn.modify {
+            background: #3498db;
+        }
+        .status-btn.complete {
+            background: #27ae60;
+        }
+        .link-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #6a8d73;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: center;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        .link-button:hover {
+            background-color: #5a7b63;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" onclick="resetTaskToEdit()" class="link-button">Nouvelle tâche</a>
+    <h1>Résumé des tâches</h1>
+
+    <div class="table-container">
+        <h2>En cours</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Titre</th>
+                    <th>Description</th>
+                    <th>Catégorie</th>
+                    <th>Priorité</th>
+                    <th>Difficulté</th>
+                    <th>Date limite</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="tasks-en-cours">
+            </tbody>
+        </table>
+    </div>
+
+    <div class="table-container">
+        <h2>En attente</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Titre</th>
+                    <th>Description</th>
+                    <th>Catégorie</th>
+                    <th>Priorité</th>
+                    <th>Difficulté</th>
+                    <th>Date limite</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="tasks-en-attente">
+            </tbody>
+        </table>
+    </div>
+
+    <div class="table-container">
+        <h2>En retard</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Titre</th>
+                    <th>Description</th>
+                    <th>Catégorie</th>
+                    <th>Priorité</th>
+                    <th>Difficulté</th>
+                    <th>Date limite</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="tasks-en-retard">
+            </tbody>
+        </table>
+    </div>
+
+    <div class="table-container">
+        <h2>Terminée</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Titre</th>
+                    <th>Description</th>
+                    <th>Catégorie</th>
+                    <th>Priorité</th>
+                    <th>Difficulté</th>
+                    <th>Date limite</th>
+                </tr>
+            </thead>
+            <tbody id="tasks-terminee">
+            </tbody>
+        </table>
+    </div>
+
+<script>
+    const options = {
+        categories: {
+            potions: "Préparation de potions",
+            spells: "Apprentissage de sorts",
+            creatures: "Soins aux créatures",
+            divination: "Divination",
+            herbology: "Botanique magique"
+        },
+        priorities: {
+            high: "Sortilège urgent",
+            medium: "Important",
+            low: "Peut attendre un sort"
+        },
+        difficulties: {
+            easy: "Sort simple",
+            medium: "Sort intermédiaire",
+            hard: "Sort complexe",
+            epic: "Sort légendaire"
+        }
+    };
+
+    function resetTaskToEdit() {
+        localStorage.removeItem("taskToEdit");
+    }
+
+    const tasks = JSON.parse(localStorage.getItem("tasks") || "[]");
+
+    document.addEventListener("DOMContentLoaded", function () {
+        afficherTaches();
+    });
+
+    function afficherTaches() {
+        const tbodyEnCours = document.getElementById("tasks-en-cours");
+        const tbodyTerminee = document.getElementById("tasks-terminee");
+        const tbodyEnRetard = document.getElementById("tasks-en-retard");
+        const tbodyEnAttente = document.getElementById("tasks-en-attente");
+
+        tbodyEnCours.innerHTML = "";
+        tbodyTerminee.innerHTML = "";
+        tbodyEnRetard.innerHTML = "";
+        tbodyEnAttente.innerHTML = "";
+
+        tasks.forEach(task => {
+            let row = `
+                <tr>
+                    <td>${task.titre || ""}</td>
+                    <td>${task.description || ""}</td>
+                    <td>${options.categories[task.categorie] || task.categorie || ""}</td>
+                    <td>${options.priorities[task.priorite] || task.priorite || ""}</td>
+                    <td>${options.difficulties[task.difficulte] || task.difficulte || ""}</td>
+                    <td>${task.dateLimite || ""}</td>
+            `;
+
+            if (task.statut === "en_cours" || task.statut === "en_retard" || task.statut === "en_attente") {
+                row += `
+                    <td class="status-btns-cell">
+                        <div class="status-btn-row">
+                            <button class="status-btn modify" onclick="modifierTache(${task.id})">Modifier</button>
+                            <button class="status-btn" onclick="supprimerTache(${task.id})">Annuler</button>
+                        </div>
+                        <button class="status-btn complete" onclick="marquerCommeTerminee(${task.id})">Marquer comme terminée</button>
+                    </td>
+                `;
+            }
+
+            row += `</tr>`;
+
+            if (task.statut === "en_cours") {
+                tbodyEnCours.innerHTML += row;
+            } else if (task.statut === "en_attente") {
+                tbodyEnAttente.innerHTML += row;
+            } else if (task.statut === "en_retard") {
+                tbodyEnRetard.innerHTML += row;
+            } else if (task.statut === "terminee") {
+                tbodyTerminee.innerHTML += row;
+            }
+        });
+    }
+
+    function marquerCommeTerminee(id) {
+        const task = tasks.find(t => t.id === id);
+        if (task) {
+            task.statut = "terminee";
+            localStorage.setItem("tasks", JSON.stringify(tasks));
+            afficherTaches();
+        }
+    }
+
+    function modifierTache(id) {
+        const task = tasks.find(t => t.id === id);
+        if (task) {
+            localStorage.setItem("taskToEdit", JSON.stringify(task));
+            window.location.href = "index.html";
+        }
+    }
+
+    function supprimerTache(id) {
+        const updatedTasks = tasks.filter(t => t.id !== id);
+
+        localStorage.setItem("tasks", JSON.stringify(updatedTasks));
+
+        tasks.length = 0; 
+        tasks.push(...updatedTasks);
+
+        afficherTaches();
+    }
+</script>
+</body>
+</html>
